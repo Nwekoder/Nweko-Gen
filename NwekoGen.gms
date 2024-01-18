@@ -69,7 +69,7 @@ Sub ObjectCloner()
     Next j
             
     xGroup.Delete
-    yGroup.Group
+    yGroup.group
 End Sub
 Sub GridMaker()
     ActiveDocument.Unit = cdrCentimeter
@@ -136,7 +136,7 @@ Sub GridMaker()
     Next j
             
     xGroup.Delete
-    yGroup.Group
+    yGroup.group
 End Sub
 Sub CutMarker()
     ActiveDocument.Unit = cdrMillimeter
@@ -218,6 +218,69 @@ Sub CutMarker()
     cutmarks.Add cutline3
     cutmarks.Add cutline4
     
-    withobject.Add cutmarks.Group
-    withobject.Group
+    withobject.Add cutmarks.group
+    withobject.group
+End Sub
+Sub Layouter()
+    ActiveDocument.Unit = cdrMillimeter
+    
+    Dim pageWidth As Double
+    Dim pageHeight As Double
+    Dim pageStartPosX As Double
+    Dim pageStartPosY As Double
+    
+    pageWidth = ActiveDocument.Pages.First.SizeWidth - 10
+    pageHeight = ActiveDocument.Pages.First.SizeHeight - 15
+    
+    pageStartPosX = 10
+    pageStartPosY = pageHeight
+    
+    Dim mataX As Integer
+    Dim mataY As Integer
+    mataX = 1
+    mataY = 1
+               
+    Do While (mataX * ActiveSelection.Shapes.First.SizeWidth) < pageWidth
+        mataX = mataX + 1
+    Loop
+            
+    If mataX > 1 Then
+        mataX = mataX - 1
+    End If
+            
+    Do While (mataY * ActiveSelection.Shapes.First.SizeHeight) < pageHeight
+        mataY = mataY + 1
+    Loop
+            
+    If mataY > 1 Then
+        mataY = mataY - 1
+    End If
+    
+    Dim counter As Integer
+    counter = 1
+    
+    Dim row As Integer
+    row = 1
+    
+    Dim group As New ShapeRange
+    
+    Do While counter <= ActiveSelection.Shapes.Count
+        Dim i As Integer
+        For i = 1 To mataX
+            If counter > ActiveSelection.Shapes.Count Then
+                Exit For
+            End If
+            
+            ActiveSelection.Shapes(counter).Move (ActiveSelection.Shapes(counter).SizeWidth * i), (ActiveSelection.Shapes(counter).SizeHeight * row)
+            group.Add ActiveSelection.Shapes(counter)
+            counter = counter + 1
+        Next i
+        If row >= mataY Then
+            Exit Do
+        Else
+            row = row + 1
+        End If
+    Loop
+    
+    group.group
 End Sub
